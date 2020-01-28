@@ -1,6 +1,7 @@
 // A Java program for a Server 
 import java.net.*; 
 import java.io.*; 
+import java.util.*;
   
 public class HXServerJava 
 { 
@@ -37,20 +38,22 @@ public class HXServerJava
                     line = in.readLine(); 
                     System.out.println("line before is: " + line);
                     line = line.replaceAll("\\s",""); //trying to get rid of whitespace
-                    System.out.println("line after is: " + line);
-                    if ((line != null && line.equals("hi")==true)) {
+                    //System.out.println("line after is: " + line);
+                    String[] command = line.split("-");
+                    System.out.println(Arrays.toString(command));
+                    if ((line != null && command[0].equals("hi")==true)) {
                     	commandFlag = 1;
                     	out.print("Welcome by server\n");
                         out.flush();
                         //out.close();
                     }
-                    if ((line != null && line.equals("command1")==true)) {
+                    if ((line != null && command[0].equals("command1")==true)) {
                     	commandFlag = 1;
                     	out.print("first command executed\n");
                         out.flush();
                         //out.close();
                     }
-                    if ((line != null && line.equals("exit")==true)) {
+                    if ((line != null && command[0].equals("exit")==true)) {
                     	commandFlag = 1;
                     	out.print("exiting, closing socket\n");
                         out.flush();
