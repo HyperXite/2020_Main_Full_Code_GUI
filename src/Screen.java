@@ -34,6 +34,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener, MouseM
     ArrayList<drawableWrapper> allobjects = new ArrayList<drawableWrapper>(30);
     allData entireDataSet = new allData();
     drawableWrapper selectedObject = null;
+ 
+    // for later adding to the list
+    //ArrayList<drawableWrapper> savedobjects = new ArrayList<drawableWrapper>(30);
+    
 
     private BufferedImage offscreen;
     private Graphics2D buffer;
@@ -49,7 +53,13 @@ public class Screen extends JPanel implements KeyListener, MouseListener, MouseM
         this.addMouseMotionListener(this);
         this.addMouseWheelListener(this);
 
-        allobjects.add(new Kinematics(10,10));
+        allobjects.add(new Acceleration(10,100));
+        allobjects.add(new Position(30,120));
+        allobjects.add(new Velocity(50,140));
+        allobjects.add(new Pressure(70,160));
+        allobjects.add(new Voltage(90,180));
+        allobjects.add(new Current(110,200));
+        allobjects.add(new MotorTemp(130,220));
         allobjects.add(new podState(10,50));
 
 

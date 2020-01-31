@@ -8,6 +8,10 @@ public class allData {
     double position = 0;
     double velocity = 0;
     double acceleration = 0;
+    double pressure = 0;
+    double motor_temp = 0;
+    double voltage = 0;
+    double current = 0;
 
     String podState = "unknown";
 
@@ -25,10 +29,21 @@ public class allData {
     public void setAcceleration(double newAcceleration){
         acceleration = newAcceleration;
     }
+    public void setPressure(double newPressure){
+        pressure = newPressure;
+    }
+    public void setMotorTemp(double newMotorTemp){
+        motor_temp = newMotorTemp;
+    }
+    public void setVoltage(double newVoltage){
+        voltage = newVoltage;
+    }
+    public void setCurrent(double newCurrent){
+        current = newCurrent;
+    }
     public void setPodState(String newPodState){
         podState = newPodState;
     }
-
 
     //basically a big list of get functions
     public double getPosition(){
@@ -39,6 +54,18 @@ public class allData {
     }
     public double getAcceleration(){
         return acceleration;
+    }
+    public double getPressure(){
+    	return pressure;
+    }
+    public double getMotorTemp(){
+    	return motor_temp;
+    }
+    public double getVoltage(){
+    	return voltage;
+    }
+    public double getCurrent(){
+    	return current;
     }
     public String getPodState(){
         return podState;
