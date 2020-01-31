@@ -32,8 +32,12 @@ public class Screen extends JPanel implements KeyListener, MouseListener, MouseM
 
     inputStates inputs = new inputStates();
     ArrayList<drawableWrapper> allobjects = new ArrayList<drawableWrapper>(30);
-    allData entireDataSet = new allData();
+    volatile allData entireDataSet = new allData();
     drawableWrapper selectedObject = null;
+
+    boolean had_first_communication = false;
+
+    HXServerJava server;
  
     // for later adding to the list
     //ArrayList<drawableWrapper> savedobjects = new ArrayList<drawableWrapper>(30);
@@ -61,13 +65,16 @@ public class Screen extends JPanel implements KeyListener, MouseListener, MouseM
         allobjects.add(new Current(110,200));
         allobjects.add(new MotorTemp(130,220));
         allobjects.add(new podState(10,50));
+        allobjects.add(new Communication_health(200,300));
 
 
         offscreen = new BufferedImage(screensize.width, screensize.height, BufferedImage.TYPE_INT_ARGB);
         buffer = offscreen.createGraphics();
 
         buffer.setBackground(Color.black);
+
         new Thread(r).start();
+        new Thread(r_server).start();
     }
 
     Runnable r = new Runnable() {
@@ -76,10 +83,18 @@ public class Screen extends JPanel implements KeyListener, MouseListener, MouseM
 
 
             boolean objectSelectBool = false;
+            long lasttime = System.currentTimeMillis();
             do {
+
                 while (isrunning) {
 
-                    testnumber++;
+                    //timekeeping handled here for the connection health
+                    if (had_first_communication) {
+                        entireDataSet.setTime_from_last_communication(entireDataSet.getTime_from_last_communication()
+                                + (System.currentTimeMillis() - lasttime));
+                    }
+                    lasttime = System.currentTimeMillis();
+
 
                     for(drawableWrapper object : allobjects){
                         object.updatevalues(entireDataSet);
@@ -103,10 +118,10 @@ public class Screen extends JPanel implements KeyListener, MouseListener, MouseM
 
 
                     latch = new CountDownLatch(1);
-                    repaint();
                     //latch to synchronize threads in extreme lag, overriding paint if 1 second elapses resulting in visual bugs
                     try {
                         latch.await(1, TimeUnit.SECONDS);
+                        repaint();
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -123,6 +138,26 @@ public class Screen extends JPanel implements KeyListener, MouseListener, MouseM
             System.exit(1);
         }
     };
+
+    Runnable r_server = new Runnable() {
+        @Override
+        public void run() {
+
+
+            server = new HXServerJava(5000);
+            entireDataSet.setTime_from_last_communication(0);
+            had_first_communication = true; //cause the connection was at least created
+            while (isrunning) {
+                if (server.waitForConnection(10, entireDataSet)){
+                    entireDataSet.setTime_from_last_communication(0);
+                }
+
+            }
+            server.closeConnection();
+        }
+    };
+
+
 
     @Override
     public void paintComponent(Graphics g) {

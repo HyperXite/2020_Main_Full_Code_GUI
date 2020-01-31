@@ -12,6 +12,7 @@ public class allData {
     double motor_temp = 0;
     double voltage = 0;
     double current = 0;
+    long time_from_last_communication = 9999999;
 
     String podState = "unknown";
 
@@ -44,6 +45,7 @@ public class allData {
     public void setPodState(String newPodState){
         podState = newPodState;
     }
+    public void setTime_from_last_communication(long newtime_from_last_communication) {time_from_last_communication = newtime_from_last_communication;}
 
     //basically a big list of get functions
     public double getPosition(){
@@ -70,5 +72,6 @@ public class allData {
     public String getPodState(){
         return podState;
     }
+    public long getTime_from_last_communication() {return time_from_last_communication;}
 
 }

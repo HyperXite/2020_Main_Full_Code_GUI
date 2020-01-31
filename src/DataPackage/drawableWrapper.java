@@ -25,6 +25,11 @@ public abstract class drawableWrapper {
 
     public abstract void drawOnBuffer(Graphics2D buffer);
 
+    public drawableWrapper(int x, int y){
+        xPosition = x;
+        yPosition = y;
+    }
+
     public void moveposition(int newX, int newY){
         xPosition = newX;
         yPosition = newY;

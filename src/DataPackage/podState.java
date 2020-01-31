@@ -6,9 +6,8 @@ public class podState extends drawableWrapper {
     private String state;
 
     public podState(int setXposition, int setYposition){
+        super(setXposition,setYposition);
         state = "unknown";
-        xPosition = setXposition;
-        yPosition = setYposition;
         yHeight = 100;
         xWidth = 75;
     }

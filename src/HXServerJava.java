@@ -1,92 +1,87 @@
 // A Java program for a Server 
-import java.net.*; 
+import DataPackage.allData;
+
+import java.net.*;
 import java.io.*; 
 import java.util.*;
-  
+import java.util.logging.Handler;
+
 public class HXServerJava 
 { 
     //initialize socket and input stream 
     private Socket          socket   = null; 
-    private ServerSocket    server   = null; 
-    private DataInputStream in       =  null; 
+    private ServerSocket    server   = null;
+    private BufferedReader in;
+    private PrintWriter out;
+    private String line;
+    private opcodeHandler handler = new opcodeHandler();
   
     // constructor with port 
-    public HXServerJava(int port) 
-    { 
-        // starts server and waits for a connection 
+    public HXServerJava(int port) {
+        // starts server and creates a connection
+        try {
+            server = new ServerSocket(port);
+            System.out.println("opened port");
+
+            socket = server.accept();
+            System.out.println("connection formed");
+
+            //initialize readers and writers once a connection is made
+            in= new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out=new PrintWriter(socket.getOutputStream(),true);
+            line = "";
+
+        } catch (IOException i) {
+            System.out.println(i);
+        }
+    }
+
+    public boolean waitForConnection(int timeout, allData data) {
+        //waits for a transmission until timeout in milliseconds
+        //handles the operations if a transmission is received
+        //returns true if communication happened false if failed
+
+
         try
-        { 
-            server = new ServerSocket(port); 
-            System.out.println("Server started"); 
-  
-            System.out.println("Waiting for a client ..."); 
-  
-            socket = server.accept(); 
-            System.out.println("Client accepted"); 
-  
-            // takes input from the client socket 
-            BufferedReader in= new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out=new PrintWriter(socket.getOutputStream(),true);
-            String line = ""; 
-  
-            // reads message from client until "over" is sent 
-            while (!line.equals("exit")) 
-            { 
-                try
-                { 
-                	int commandFlag = 0;
-                    line = in.readLine(); 
-                    System.out.println("line before is: " + line);
-                    line = line.replaceAll("\\s",""); //trying to get rid of whitespace
-                    //System.out.println("line after is: " + line);
-                    String[] command = line.split("-");
-                    System.out.println(Arrays.toString(command));
-                    if ((line != null && command[0].equals("hi")==true)) {
-                    	commandFlag = 1;
-                    	out.print("Welcome by server\n");
-                        out.flush();
-                        //out.close();
-                    }
-                    if ((line != null && command[0].equals("command1")==true)) {
-                    	commandFlag = 1;
-                    	out.print("first command executed\n");
-                        out.flush();
-                        //out.close();
-                    }
-                    if ((line != null && command[0].equals("exit")==true)) {
-                    	commandFlag = 1;
-                    	out.print("exiting, closing socket\n");
-                        out.flush();
-                        //out.close();
-                    }
-                    
-                    if (line != null && commandFlag == 0){
-                    	out.print("command not recognized!\n");
-                        out.flush();
-                    }
-  
-                } 
-                catch(IOException i) 
-                { 
-                    System.out.println(i); 
-                } 
-            } 
-            System.out.println("Closing connection"); 
-            out.print("exit\n");
+        {
+            int count = 0;
+            while(count < timeout){
+                Thread.sleep(1);
+                count++;
+            }
+            line = in.readLine();
+            if (line == null){
+                return false;
+            }
+
+            System.out.println("incoming command: " + line);
+            line = line.replaceAll("\\s",""); //trying to get rid of whitespace
+            String[] command = line.split("-");
+            handler.handleIncoming(command,data);
+            out.println(""+handler.SUCCESS+"-"+0);
+        }
+        catch(IOException i)
+        {
+            System.out.println(i);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+
+
+    public void closeConnection() {
+        //closes connection for ending the communication
+        try {
             out.flush();
-            // close connection 
-            socket.close(); 
-            in.close(); 
+            socket.close();
+            in.close();
             out.close();
-        } 
-        catch(IOException i) 
-        { 
-            System.out.println(i); 
-        } 
-    } 
-  
-    public static void main(String args[]) 
-    { 
-        HXServerJava server = new HXServerJava(5000); 
-    } 
-} 
+        } catch(IOException i)
+        {
+            System.out.println(i);
+        }
+    }
+
+}
