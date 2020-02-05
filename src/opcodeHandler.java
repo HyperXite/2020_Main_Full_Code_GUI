@@ -18,7 +18,7 @@ public class opcodeHandler {
 
 
     //for BBB to computer communications also the second part of the add CSV stuff
-    public final char TEMPURATURE = 'c';
+    public final char TEMPERATURE = 'c';
     public final char VELOCITY = 'd';
     public final char ACCELERATION = 'e';
     public final char PRESSURE_1 = 'f';
@@ -38,7 +38,7 @@ public class opcodeHandler {
     public void handleIncoming(String[] command, allData data){
         switch(command[0].toLowerCase().charAt(0)){
             //figure out what command is incoming and then handle it
-            case(TEMPURATURE):
+            case(TEMPERATURE):
                 data.setMotorTemp(Double.parseDouble(command[1]));
                 break;
             case(VELOCITY):
