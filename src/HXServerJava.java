@@ -49,11 +49,12 @@ public class HXServerJava
                 Thread.sleep(1);
                 count++;
             }
+            //System.out.println("before client read");
             line = in.readLine();
+            //System.out.println("after client read");
             if (line == null){
                 return false;
             }
-
             System.out.println("incoming command: " + line);
             line = line.replaceAll("\\s",""); //trying to get rid of whitespace
             String[] command = line.split("-");
